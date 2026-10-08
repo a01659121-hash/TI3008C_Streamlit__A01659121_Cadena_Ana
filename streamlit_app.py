@@ -24,7 +24,7 @@ st.title("Explorador de operación")
 st.caption("Aplicación inicial para explorar resultados por área y región.")
 
 # TODO OBLIGATORIO: escribe tu nombre completo.
-st.write("**Desarrollado por:** Escribe aquí tu nombre")
+st.write("**Desarrollado por:** Ana Lucía Cadena Castellanos")
 
 st.sidebar.header("Filtros")
 
@@ -76,6 +76,55 @@ st.info(
 # - Permite cargar un CSV con st.file_uploader.
 # - Valida que el archivo tenga las columnas necesarias.
 # - Permite descargar df_filtrado con st.download_button.
+
+# --- PARTE 5: MEJORA FUNCIONAL - OPCIÓN B: EXPLORADOR DE DATOS ---
+st.divider()
+st.subheader("📂 Explorador y Análisis de Datos Personalizado")
+st.write("Sube tu propio archivo CSV para explorar, filtrar y descargar los resultados en tiempo real.")
+
+# 1. Carga de archivos CSV mediante st.file_uploader
+archivo_subido = st.file_uploader("Sube un archivo CSV con tus datos", type=["csv"])
+
+if archivo_subido is not None:
+    import pandas as pd
+    try:
+        # Leer el archivo CSV
+        df_usuario = pd.read_csv(archivo_subido)
+        
+        # 2. Validación de columnas necesarias (ejemplo: validamos que tenga al menos 2 columnas)
+        if len(df_usuario.columns) < 2:
+            st.error("El archivo CSV debe contener al menos dos columnas para realizar el análisis.")
+        else:
+            st.success("¡Archivo cargado y validado exitosamente!")
+            
+            # Mostrar vista previa de las columnas detectadas
+            st.write(f"Columnas detectadas: {list(df_usuario.columns)}")
+            
+            # Filtro opcional interactivo basado en la primera columna de texto o categórica disponible
+            columna_filtro = st.selectbox("Selecciona una columna para filtrar (opcional):", options=df_usuario.columns)
+            valores_unicos = df_usuario[columna_filtro].unique()
+            valor_seleccionado = st.multiselect(f"Filtrar valores en {columna_filtro}:", options=valores_unicos, default=list(valores_unicos))
+            
+            # Filtrar el DataFrame
+            df_filtrado = df_usuario[df_usuario[columna_filtro].isin(valor_seleccionado)]
+            
+            # 3. Visualización mediante st.dataframe
+            st.write(f"Mostrando {len(df_filtrado)} registros filtrados:")
+            st.dataframe(df_filtrado, use_container_width=True)
+            
+            # 4. Descarga de los datos filtrados mediante st.download_button
+            csv_convertido = df_filtrado.to_csv(index=False).encode('utf-8')
+            st.download_button(
+                label="📥 Descargar datos filtrados (CSV)",
+                data=csv_convertido,
+                file_name="datos_filtrados.csv",
+                mime="text/csv",
+            )
+            
+    except Exception as e:
+        st.error(f"Ocurrió un error al procesar el archivo: {e}")
+else:
+    st.info("Esperando a que subas un archivo CSV para comenzar la exploración...")
 
 # TODO OPCIÓN C: Simulador
 # - Solicita al menos dos valores al usuario.
