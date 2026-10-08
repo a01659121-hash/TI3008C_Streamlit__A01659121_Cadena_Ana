@@ -100,7 +100,7 @@ if archivo_subido is not None:
             # Mostrar vista previa de las columnas detectadas
             st.write(f"Columnas detectadas: {list(df_usuario.columns)}")
             
-            # Filtro opcional interactivo basado en la primera columna de texto o categórica disponible
+            # Filtro opcional interactivo basado en la columna seleccionada
             columna_filtro = st.selectbox("Selecciona una columna para filtrar (opcional):", options=df_usuario.columns)
             valores_unicos = df_usuario[columna_filtro].unique()
             valor_seleccionado = st.multiselect(f"Filtrar valores en {columna_filtro}:", options=valores_unicos, default=list(valores_unicos))
